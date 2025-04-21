@@ -31,13 +31,13 @@ public static class Helpers {
         return randList;
     }
 
-public static Dictionary<string, (int, List<int>)> DeepCopyClasses(Dictionary<string, (int, List<int>)> original) {
-    var newDict = new Dictionary<string, (int, List<int>)>();
-    foreach (var kvp in original) {
-        int maxSize = kvp.Value.Item1;
-        List<int> copiedList = new List<int>(kvp.Value.Item2);
-        newDict[kvp.Key] = (maxSize, copiedList);
+    public static Dictionary<string, (int, List<int>)> DeepCopyClasses(Dictionary<string, (int, List<int>)> original) {
+        var newDict = new Dictionary<string, (int, List<int>)>();
+        foreach (var kvp in original) {
+            int maxSize = kvp.Value.Item1;
+            List<int> copiedList = new List<int>(kvp.Value.Item2);
+            newDict[kvp.Key] = (maxSize, copiedList);
+        }
+        return newDict;
     }
-    return newDict;
-}
 }

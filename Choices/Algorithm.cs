@@ -1,11 +1,7 @@
 public class Algorithm { 
     Random random = new Random();
 
-    string[] classNames = ["science", "math", "physics", "biology", "english", "PE", "Botany"];
-    // Dictionary<(string, int)> classRoomSize = new Di<(string, int)>();
-    // Dictionary<string, List<int>> classRoomArraingement = new Dictionary<string, List<int>>();
-    Dictionary<string, (int, List<int>)> classes = new Dictionary<string, (int, List<int>)>();
-
+    IList<ClassData> classes;
 
     //INDEX 1 is STUDENT, INDEX 2 is class Order - Item is CLASS 
     // int[,] choices = new int[30, 5];
@@ -13,7 +9,17 @@ public class Algorithm {
     int studentCount = 35;
     int choiceCount = 5;
 
+    async void LoadClasses() {
+        using var stream = File.OpenRead(CLASS_DATA_PATH);
+        IList<ClassData>? result = await JsonDeserializer.DeserializeAsync<IList<ClassData>>(stream);
+        if (!result)
+        {
+            throw new Exception("Failed to read class data");
+        }
+        choices = result;
+    }
     void SetUp() {
+        LoadClasses();
         for (int i = 0; i < classNames.Length; i++) {
             classes.Add(classNames[i], (5, new List<int>()));
         }

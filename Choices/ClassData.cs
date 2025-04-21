@@ -1,0 +1,1 @@
+﻿public record ClassData(string Name, bool IsSports, int Capacity);
