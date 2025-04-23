@@ -1,90 +1,74 @@
-public class Algorithm { 
-    Random random = new Random();
+using System.Numerics;
+using System.Security.Cryptography;
 
-    IList<ClassData> classes;
+namespace Choices
+{
+    internal class Algorithm
+    {
+        readonly Random random;
 
-    //INDEX 1 is STUDENT, INDEX 2 is class Order - Item is CLASS 
-    // int[,] choices = new int[30, 5];
-    List<int[]> choices = new List<int[]>();
-    int studentCount = 35;
-    int choiceCount = 5;
+        readonly IList<ClassData> classes;
+        readonly ChoiceReader choiceReader;
+        private readonly ScoringCriteria criteria;
 
-    async void LoadClasses() {
-        using var stream = File.OpenRead(CLASS_DATA_PATH);
-        IList<ClassData>? result = await JsonDeserializer.DeserializeAsync<IList<ClassData>>(stream);
-        if (!result)
+        public Algorithm(IList<ClassData> classes, ChoiceReader choiceReader)
         {
-            throw new Exception("Failed to read class data");
-        }
-        choices = result;
-    }
-    void SetUp() {
-        LoadClasses();
-        for (int i = 0; i < classNames.Length; i++) {
-            classes.Add(classNames[i], (5, new List<int>()));
+            this.classes = classes;
+            this.choiceReader = choiceReader;
+            criteria = new(choiceReader);
+            random = new();
         }
 
-        List<int> posClasses = new List<int>();
-        for (int i = 0; i < classNames.Length; i++) posClasses.Add(i);
+        Solution GreedyAlgorithm()
+        {
+            Solution? bestSolution = null;
+            int bestScore = int.MaxValue;
 
-        for (int i = 0; i < studentCount; i++) {
-            List<int> posClassesCopy = posClasses.ToList();
-            int[] studentChoices = new int[choiceCount];
-            for (int j = 0; j < choiceCount; j++) {
-                int value = random.Next(0, posClassesCopy.Count);
-                studentChoices[j] = posClassesCopy[value];
-                posClassesCopy.RemoveAt(value);
-            }
-            choices.Add(studentChoices);
-        }
-    }
-
-    void GreedyAlgorithm(int depth = 1000) {
-        int minError = 9999;
-        Dictionary<string, (int, List<int>)> tempClasses;
-        Dictionary<string, (int, List<int>)> bestClasses = Helpers.DeepCopyClasses(classes);
-
-
-        for (int iteration = 0; iteration < depth; iteration++) {
-            int error = 0;
-            tempClasses = Helpers.DeepCopyClasses(classes);
-            List<int[]> randChoices = Helpers.RandomizeList(choices);
-
-
-            for (int i = 0; i < randChoices.Count; i++) {
-                int[] student = randChoices[i];
-                bool wasStudentAdded = false;
-                for (int j = 0; j < student.Length; j++) {
-                    string className = classNames[student[j]];
-                    var (maxClassSize, studentList) = tempClasses[className];
-                    if (studentList.Count < maxClassSize) {
-                        studentList.Add(i);
-                        error += j;
-                        wasStudentAdded = true;
-                        break;
-                    } 
-                }
-                if (wasStudentAdded == false) {
-                    error += 10;
+            for (int i = 0; i < Constants.GREEDY_ALGORITHM_ITERATIONS; i++)
+            {
+                Solution solution = GenerateRandomSolution();
+                int score = criteria.ScoreSolution(solution);
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    bestSolution = solution;
                 }
             }
-
-            Console.WriteLine(error);
-
-            if (error < minError) {
-                minError = error;
-                bestClasses = Helpers.DeepCopyClasses(tempClasses);
+            if (bestSolution == null)
+            {
+                throw new Exception("No iters");
             }
+            return bestSolution;
+        }
+        private Solution GenerateRandomSolution()
+        {
+            Solution solution = new();
+            Dictionary<Student, Schedule> schedules = [];
+            for (int period = 0; period < Constants.PERIODS; period++)
+            {
+                Dictionary<ClassData, int> studentsInClasses = [];
+                Student[] students = choiceReader.GetStudents().ToArray();
+                random.Shuffle(students);
+                foreach (var student in students)
+                {
+                    var cls = choiceReader.GetChoices(student).GetFirstMatching(period, (cls) => studentsInClasses.GetValueOrDefault(cls, 0) < cls.Capacity);
+                    if (cls == null)
+                    {
+                        throw new Exception("Not enough class space in period " + period);
+                    }
+                    studentsInClasses[cls] = studentsInClasses.GetValueOrDefault(cls, 0) + 1;
+                    solution.PushPeriod(student, cls);
+                }
+            }
+            return solution;
         }
 
-        Console.WriteLine(minError);
-        classes = bestClasses;
+        public void Run()
+        {
+            Solution solution = GreedyAlgorithm();
+            solution.Print();
+            solution.Upload();
+        }
     }
 
-    public void Run() {
-        SetUp();
-        // Helpers.ShowChoices(choices);
-        GreedyAlgorithm();
-        Helpers.ShowClasses(classes);
-    }
 }
