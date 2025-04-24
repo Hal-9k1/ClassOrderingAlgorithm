@@ -58,7 +58,10 @@ namespace Choices
                     );
                     if (cls == null)
                     {
-                        throw new Exception("Not enough class space in period " + period);
+                        throw new Exception($"Not enough class space in period {period + 1} for student {student}. Config: {
+                            string.Join('\n', studentsInClasses.Select((pair) => $"{pair.Key} : {pair.Value} ({pair.Key.Capacity})"))
+                            } \nTotal students: {students.Count()} Choices: {choiceReader.GetChoices(student).PeriodChoiceToString(period)}"
+                        );
                     }
                     studentsInClasses[cls] = studentsInClasses.GetValueOrDefault(cls, 0) + 1;
                     solution.PushPeriod(student, cls);
@@ -70,8 +73,8 @@ namespace Choices
         public void Run()
         {
             Solution solution = GreedyAlgorithm();
-            //solution.Print();
-            solution.Upload();
+            solution.Print();
+            solution.Output();
             Console.WriteLine("Finish");
         }
     }

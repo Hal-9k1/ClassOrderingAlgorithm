@@ -11,6 +11,9 @@
     <None Update="choiceData.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="input.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="secrets\apikey.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -6,8 +6,7 @@
         {
             ClassReader classReader = new(Constants.CLASS_DATA_PATH);
             //IChoiceReader choiceReader = new TestChoiceReader(classReader.GetClasses());
-            IChoiceReader choiceReader = new CsvChoiceReader();
-            choiceReader.GetStudents().ToList().ForEach(Console.WriteLine);
+            IChoiceReader choiceReader = new CsvChoiceReader(new StreamReader(Constants.INPUT_PATH), classReader.GetClasses());
             ValidateAllChoices(choiceReader);
 
             new Algorithm(classReader.GetClasses(), choiceReader).Run();
@@ -19,10 +18,12 @@
             {
                 for (int period = 0; period < Constants.PERIODS; period++)
                 {
-                    if (choiceReader.GetChoices(student).GetFirstMatching(period,
-                        (cls) => !cls.Periods.Contains(period + 1)) != null)
+                    ClassData? invalid = choiceReader.GetChoices(student).GetFirstMatching(period,
+                        (cls) => !cls.Periods.Contains(period + 1));
+                    if (invalid != null)
                     {
-                        throw new Exception($"Choices for student {student} period {period} contains class not offered this period.");
+                        throw new Exception($"Choices for student {student} period {period + 1} contains class {
+                            invalid} not offered this period. Choices: {choiceReader.GetChoices(student)}");
                     }
                 }
             }

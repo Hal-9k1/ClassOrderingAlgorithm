@@ -49,14 +49,14 @@
         "periods": [ 2, 3 ]
     },
     {
-        "name": "Murder Mystery",
+        "name": "Detective Murder Mystery",
         "desc": "Presentation about a fictional local murder and using deductive techniques to solve the case.",
         "isSports": false,
         "capacity": 35,
         "periods": [ 2 ]
     },
     {
-        "name": "Homeland Security guest speaker",
+        "name": "Homeland Security Investigations",
         "desc": "Special Agent Smith and her team present on homeland security, their career and education paths, and some famous cases they worked on.",
         "isSports": false,
         "capacity": 35,
@@ -70,7 +70,7 @@
         "periods": [ 2, 3, 6 ]
     },
     {
-        "name": "Orienteering & GIS mapping",
+        "name": "Orienteering / GIS Mapping",
         "desc": "First half: basics of orienteering (competitive navigation sport), reading orienteer's maps, navigation strategies.\nSecond half: presentation on digital mapmaking and geographical information systems (GIS).",
         "isSports": false,
         "capacity": 35,
@@ -84,14 +84,14 @@
         "periods": [ 3 ]
     },
     {
-        "name": "Red Cross guest speaker",
+        "name": "Red Cross",
         "desc": "Presentation, demonstration, and practice of first aid and CPR on dummies.",
         "isSports": false,
         "capacity": 35,
         "periods": [ 3, 4 ]
     },
     {
-        "name": "Photography guest speaker",
+        "name": "Photography Workshop",
         "desc": "Watch guest speaker Aliah's presentation on photography techniques and composition.",
         "isSports": false,
         "capacity": 35,
@@ -105,7 +105,7 @@
         "periods": [ 4 ]
     },
     {
-        "name": "Robotics Engineering guest speaker",
+        "name": "Robotics/Electrical Engineering guest speaker",
         "desc": "Guest speaker Leo Chan discusses ",
         "isSports": false,
         "capacity": 35,
@@ -133,7 +133,7 @@
         "periods": [ 5 ]
     },
     {
-        "name": "Youth Commissioner guest speaker",
+        "name": "Youth Commissioner of California",
         "desc": "Saran will discuss how she got involved in the community as a member of the League of Women Voters, the Youth Commisioner of California, as well as many other positions. She will then discuss the importance of getting involved as youth and how you can easily too.",
         "isSports": false,
         "capacity": 35,
@@ -143,7 +143,7 @@
         "name": "Capture the Flag",
         "desc": "N/A",
         "isSports": true,
-        "capacity": 35,
+        "capacity": 50,
         "periods": [ 5 ]
     },
     {
@@ -154,24 +154,30 @@
         "periods": [ 5 ]
     },
     {
-        "name": "Chemical Engineering guest speaker",
+        "name": "Chemistry/Chemical Engineering guest speaker",
         "desc": "Professor Josh Hubbard will give specific insights on the field of battery innovation, and sustainability in chemistry as well as career and project prospects in the field. This will be followed by a 30 min experiment with colored fire.",
         "isSports": false,
         "capacity": 35,
         "periods": [ 6 ]
     },
     {
-        "name": "Introduction to salt-water tanks",
+        "name": "Intro to a Saltwater Tank",
         "desc": "Setting up and caring for a hobbyist salt-water fish tank.",
         "isSports": false,
         "capacity": 35,
         "periods": [ 6 ]
     },
     {
-        "name": "Ultimate Frisbee",
+        "name": "Ultimate Frisbee & Soccer",
         "desc": "Players are sorted into teams and pitted against each other to test their athletic and teamwork abilities!",
         "isSports": true,
-        "capacity": 35,
+        "capacity": 50,
         "periods": [ 6 ]
+    },
+    {
+        "name": "Math Focus",
+        "isSports": false,
+        "capacity": 35,
+        "periods": [6]
     }
 ]

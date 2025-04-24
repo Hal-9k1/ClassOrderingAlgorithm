@@ -30,6 +30,7 @@ namespace Choices
                 error += GetSportsClassError(schedule);
                 error += GetDuplicateClassError(schedule);
                 error += GetStudentRankingError(schedule, choices);
+                error += GetQiGongError(schedule, choices);
                 schedule.ForEach((cls) =>
                 {
                     if (!classPopulation.TryGetValue(cls, out int value))
@@ -43,6 +44,16 @@ namespace Choices
                 });
             }
             error += GetStudentCountError(classPopulation);
+            return error;
+        }
+
+        private int GetQiGongError(Schedule schedule, StudentChoices choices)
+        {
+            int error = 0;
+            schedule.ForEach((cls) =>
+            {
+                error += (cls.Name == "QiGong" && choices.GetRank(1, cls) >= 3) ? 200 : 0;
+            });
             return error;
         }
 
@@ -69,7 +80,7 @@ namespace Choices
             schedule.ForEach((cls) =>
             {
                 int penalties = schedule.CountOccurrences(cls) - (cls.IsSports ? 2 : 1);
-                error += Math.Max(0, penalties) * 20;
+                error += Math.Max(0, penalties) * 2000;
             });
             return error;
         }

@@ -15,10 +15,10 @@ namespace Choices
             {
                 this.choices.Add([.. choices[i].OrderBy(cls => cls, comparer)]);
             }
-            foreach (var periodChoices in this.choices)
-            {
-                Console.WriteLine($"[{string.Join(", ", periodChoices)}]");
-            }
+            //foreach (var periodChoices in this.choices)
+            //{
+            //    Console.WriteLine($"[{string.Join(", ", periodChoices)}]");
+            //}
             Console.WriteLine();
         }
         public int GetRank(int period, ClassData cls)
@@ -28,6 +28,14 @@ namespace Choices
         public ClassData? GetFirstMatching(int period, Predicate<ClassData> predicate)
         {
             return choices[period].Find(predicate);
+        }
+        public string PeriodChoiceToString(int period)
+        {
+            return $"[{string.Join(", ", choices[period])}]";
+        }
+        public override string ToString()
+        {
+            return $"[{string.Join(";  ", choices.Select((pc) => string.Join(", ", pc)))}]";
         }
     }
 

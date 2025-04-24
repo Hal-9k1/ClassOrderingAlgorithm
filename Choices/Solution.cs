@@ -38,5 +38,10 @@ namespace Choices
         {
 
         }
+
+        internal void Output()
+        {
+            new FileStream(Constants.OUTPUT_PATH, FileAccess.Write).Write;
+        }
     }
 }
