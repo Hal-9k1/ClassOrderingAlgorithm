@@ -3,54 +3,82 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Choices
 {
     internal class ScoringCriteria
     {
-        private readonly ChoiceReader choiceReader;
+        private readonly IChoiceReader choiceReader;
 
-        internal ScoringCriteria(ChoiceReader choiceReader)
+        internal ScoringCriteria(IChoiceReader choiceReader)
         {
             this.choiceReader = choiceReader;
         }
-        internal int ScoreSolution(Solution solution)
+        internal int GetSolutionError(Solution solution)
         {
             int error = 0;
+            Dictionary<ClassData, int> classPopulation = new();
             foreach (var pair in solution.GetSchedules())
             {
+                StudentChoices choices = choiceReader.GetChoices(pair.Key);
+                Schedule schedule = pair.Value;
                 for (int i = 0; i < Constants.PERIODS; i++)
                 {
-                    error += pair.Value.GetError(choiceReader.GetChoices(pair.Key), ScoreChoiceRank);
+                    error += schedule.GetError(choices, ScoreChoiceRank);
                 }
-                error += ScoreSportsClassCount(pair.Value);
-                error += ScoreDuplicateClasses(pair.Value);
-                error += ScoreStudentGrades(pair.Value);
-                error += ScoreStudentCount(pair.Value);
+                error += GetSportsClassError(schedule);
+                error += GetDuplicateClassError(schedule);
+                error += GetStudentRankingError(schedule, choices);
+                schedule.ForEach((cls) =>
+                {
+                    if (!classPopulation.TryGetValue(cls, out int value))
+                    {
+                        classPopulation[cls] = 1;
+                    }
+                    else
+                    {
+                        classPopulation[cls] = ++value;
+                    }
+                });
             }
-
+            error += GetStudentCountError(classPopulation);
             return error;
         }
 
-        private int ScoreStudentCount(Schedule value)
+        private int GetStudentCountError(Dictionary<ClassData, int> classPopulation)
         {
-            throw new NotImplementedException();
+            return classPopulation.Values.Where(x => x < 12).Count();
         }
 
-        private int ScoreStudentGrades(Schedule value)
+        private int GetStudentRankingError(Schedule schedule, StudentChoices choices)
         {
-            throw new NotImplementedException();
+            for (int i = 0; i < Constants.PERIODS; i++)
+            {
+                if (schedule.GetError(choices) == 1)
+                {
+                    return 0;
+                }
+            }
+            return 20;
         }
 
-        private int ScoreDuplicateClasses(Schedule value)
+        private int GetDuplicateClassError(Schedule schedule)
         {
-            throw new NotImplementedException();
+            int error = 0;
+            schedule.ForEach((cls) =>
+            {
+                int penalties = schedule.CountOccurrences(cls) - (cls.IsSports ? 2 : 1);
+                error += Math.Max(0, penalties) * 20;
+            });
+            return error;
         }
 
-        private int ScoreSportsClassCount(Schedule schedule)
+        private int GetSportsClassError(Schedule schedule)
         {
-            return schedule.GetSportsClasses();
+            return Math.Max(2, schedule.GetSportsClasses()) * 10;
         }
+
         private int ScoreChoiceRank(int rank)
         {
             return rank;

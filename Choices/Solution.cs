@@ -1,6 +1,9 @@
 ﻿
 
 
+using Google.Apis.Services;
+using Google.Apis.Sheets.v4;
+
 namespace Choices
 {
     internal class Solution
@@ -17,7 +20,11 @@ namespace Choices
 
         internal void PushPeriod(Student student, ClassData cls)
         {
-            schedules.GetValueOrDefault(student, new()).PushPeriod(cls);
+            if (!schedules.ContainsKey(student))
+            {
+                schedules[student] = new();
+            }
+            schedules[student].PushPeriod(cls);
         }
         internal void Print()
         {
@@ -29,7 +36,7 @@ namespace Choices
 
         internal void Upload()
         {
-            throw new NotImplementedException();
+
         }
     }
 }

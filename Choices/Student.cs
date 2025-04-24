@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Choices
+﻿namespace Choices
 {
-    internal class Student
+    internal record Student(string FirstName, string LastName, string Email, int grade)
     {
+        public string FullName() => $"{FirstName} {LastName}";
+        public override string ToString() => FullName();
     }
 }

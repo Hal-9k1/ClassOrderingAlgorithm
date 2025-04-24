@@ -8,10 +8,10 @@ namespace Choices
         readonly Random random;
 
         readonly IList<ClassData> classes;
-        readonly ChoiceReader choiceReader;
+        readonly IChoiceReader choiceReader;
         private readonly ScoringCriteria criteria;
 
-        public Algorithm(IList<ClassData> classes, ChoiceReader choiceReader)
+        public Algorithm(IList<ClassData> classes, IChoiceReader choiceReader)
         {
             this.classes = classes;
             this.choiceReader = choiceReader;
@@ -22,15 +22,15 @@ namespace Choices
         Solution GreedyAlgorithm()
         {
             Solution? bestSolution = null;
-            int bestScore = int.MaxValue;
+            int bestError = int.MaxValue;
 
             for (int i = 0; i < Constants.GREEDY_ALGORITHM_ITERATIONS; i++)
             {
                 Solution solution = GenerateRandomSolution();
-                int score = criteria.ScoreSolution(solution);
-                if (score > bestScore)
+                int error = criteria.GetSolutionError(solution);
+                if (error < bestError)
                 {
-                    bestScore = score;
+                    bestError = error;
                     bestSolution = solution;
                 }
             }
@@ -40,6 +40,7 @@ namespace Choices
             }
             return bestSolution;
         }
+
         private Solution GenerateRandomSolution()
         {
             Solution solution = new();
@@ -51,7 +52,10 @@ namespace Choices
                 random.Shuffle(students);
                 foreach (var student in students)
                 {
-                    var cls = choiceReader.GetChoices(student).GetFirstMatching(period, (cls) => studentsInClasses.GetValueOrDefault(cls, 0) < cls.Capacity);
+                    var cls = choiceReader.GetChoices(student).GetFirstMatching(
+                        period,
+                        (cls) => studentsInClasses.GetValueOrDefault(cls, 0) < cls.Capacity
+                    );
                     if (cls == null)
                     {
                         throw new Exception("Not enough class space in period " + period);
@@ -66,8 +70,9 @@ namespace Choices
         public void Run()
         {
             Solution solution = GreedyAlgorithm();
-            solution.Print();
+            //solution.Print();
             solution.Upload();
+            Console.WriteLine("Finish");
         }
     }
 

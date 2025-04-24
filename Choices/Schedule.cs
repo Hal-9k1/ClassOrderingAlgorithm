@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Choices
+﻿namespace Choices
 {
     internal class Schedule
     {
         private List<ClassData> schedule = [];
-        public void PushPeriod(ClassData cls)
+        internal void PushPeriod(ClassData cls)
         {
             schedule.Add(cls);
             if (schedule.Count > Constants.PERIODS)
@@ -18,7 +12,7 @@ namespace Choices
             }
         }
 
-        public int GetError(StudentChoices choice, ErrorFunc? errorFunction = null)
+        internal int GetError(StudentChoices choice, ErrorFunc? errorFunction = null)
         {
             errorFunction ??= (int rank) => rank;
             int error = 0;
@@ -28,7 +22,25 @@ namespace Choices
             }
             return error;
         }
-        public int GetSportsClasses() => schedule.Where((ClassData cls) => cls.IsSports).Count();
+        internal int GetSportsClasses() => schedule.Where((ClassData cls) => cls.IsSports).Count();
+
+        internal void ForEach(Action<ClassData> func, bool unique = false)
+        {
+            if (unique)
+            {
+                foreach (var item in new HashSet<ClassData>(schedule))
+                {
+                    func(item);
+                }
+            }
+            else
+            {
+                schedule.ForEach(func);
+            }
+        }
+
+        internal int CountOccurrences(ClassData cls) => schedule.Count(c => c == cls);
+        public override string ToString() => $"[{string.Join(", ", schedule)}]";
     }
 
     delegate int ErrorFunc(int rank);

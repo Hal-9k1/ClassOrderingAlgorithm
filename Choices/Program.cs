@@ -1,18 +1,31 @@
-﻿using Choices;
-using System.Text.Json;
-
-public static class Program {
-    private static readonly string CLASS_DATA_PATH = "choiceData.json";
-
-    public static void Main(string[] args)
+﻿namespace Choices
+{
+    public static class Program
     {
-        ClassReader classReader = new(CLASS_DATA_PATH);
-        Task classesTask = classReader.Read();
-        ChoiceReader choiceReader = new();
-        Task choicesTask = choiceReader.Read();
-        Task.WaitAll(classesTask, choicesTask);
-        Algorithm algorithm = new(classReader.GetClasses(), choiceReader);
+        public static void Main(string[] args)
+        {
+            ClassReader classReader = new(Constants.CLASS_DATA_PATH);
+            //IChoiceReader choiceReader = new TestChoiceReader(classReader.GetClasses());
+            IChoiceReader choiceReader = new CsvChoiceReader();
+            choiceReader.GetStudents().ToList().ForEach(Console.WriteLine);
+            ValidateAllChoices(choiceReader);
 
-        algorithm.Run();
+            new Algorithm(classReader.GetClasses(), choiceReader).Run();
+        }
+
+        private static void ValidateAllChoices(IChoiceReader choiceReader)
+        {
+            foreach (var student in choiceReader.GetStudents())
+            {
+                for (int period = 0; period < Constants.PERIODS; period++)
+                {
+                    if (choiceReader.GetChoices(student).GetFirstMatching(period,
+                        (cls) => !cls.Periods.Contains(period + 1)) != null)
+                    {
+                        throw new Exception($"Choices for student {student} period {period} contains class not offered this period.");
+                    }
+                }
+            }
+        }
     }
 }
